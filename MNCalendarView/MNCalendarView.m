@@ -38,9 +38,11 @@
 @implementation MNCalendarView
 
 - (void)commonInit {
+
+    _selectedDates = [NSMutableArray arrayWithCapacity:1];
   self.calendar   = NSCalendar.currentCalendar;
   self.fromDate   = [NSDate.date mn_beginningOfDay:self.calendar];
-  self.toDate     = [self.fromDate dateByAddingTimeInterval:MN_YEAR * 4];
+  self.toDate     = [self.fromDate dateByAddingTimeInterval:MN_YEAR * 1];
   self.daysInWeek = 7;
   
   self.headerViewClass  = MNCalendarHeaderView.class;
@@ -98,11 +100,12 @@
   
   self.monthFormatter = [[NSDateFormatter alloc] init];
   self.monthFormatter.calendar = calendar;
-  [self.monthFormatter setDateFormat:@"MMMM yyyy"];
+  [self.monthFormatter setDateFormat:@"YYYY年MMMM"];
 }
 
 - (void)setSelectedDate:(NSDate *)selectedDate {
   _selectedDate = [selectedDate mn_beginningOfDay:self.calendar];
+    [_selectedDates addObject:_selectedDate];  // 添加选中的日期到选中的集合
 }
 
 - (void)reloadData {
@@ -267,7 +270,11 @@
   }
 
   if (self.selectedDate && cell.enabled) {
-    [cell setSelected:[date isEqualToDate:self.selectedDate]];
+      
+      // 如果日期在 选中日期的集合里则选中状态
+      [cell setSelected:[_selectedDates containsObject:date]];
+      
+//    [cell setSelected:[date isEqualToDate:self.selectedDate]];
   }
   
   return cell;
@@ -289,8 +296,12 @@
   if ([cell isKindOfClass:MNCalendarViewDayCell.class] && cell.enabled) {
     MNCalendarViewDayCell *dayCell = (MNCalendarViewDayCell *)cell;
     
-    self.selectedDate = dayCell.date;
-    
+      // 如果 日期 在选中的集合里，则做删除操作，否则添加
+      if ([_selectedDates containsObject:dayCell.date] ) {
+          [_selectedDates removeObject:dayCell.date];
+      } else {
+          self.selectedDate = dayCell.date;
+      }
     if (self.delegate && [self.delegate respondsToSelector:@selector(calendarView:didSelectDate:)]) {
       [self.delegate calendarView:self didSelectDate:dayCell.date];
     }

@@ -23,9 +23,11 @@
 @property(nonatomic,assign) id<MNCalendarViewDelegate> delegate;
 
 @property(nonatomic,strong) NSCalendar *calendar;
-@property(nonatomic,copy)   NSDate     *fromDate;
-@property(nonatomic,copy)   NSDate     *toDate;
+@property(nonatomic,strong)   NSDate     *fromDate;
+@property(nonatomic,strong)   NSDate     *toDate;
 @property(nonatomic,copy)   NSDate     *selectedDate;
+
+@property (nonatomic, strong) NSMutableArray *selectedDates;    // 选中的日期
 
 @property(nonatomic,strong) UIColor *separatorColor UI_APPEARANCE_SELECTOR; // default is the standard separator gray
 
